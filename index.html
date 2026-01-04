@@ -1030,46 +1030,6 @@
             cursor: pointer;
         }
         
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 20px;
-            gap: 10px;
-        }
-        
-        .page-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border: 2px solid var(--accent-blue);
-            background: white;
-            color: var(--accent-blue);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-        
-        .page-btn:hover:not(:disabled) {
-            background: var(--accent-blue);
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .page-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .page-info {
-            margin: 0 15px;
-            color: var(--primary-blue);
-            font-weight: 600;
-        }
-        
         /* Loading spinner */
         .spinner {
             width: 50px;
@@ -1132,6 +1092,77 @@
             font-size: 1.2rem;
             margin-left: 10px;
         }
+        
+        /* Database info */
+        .db-info {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 15px;
+            padding: 15px;
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .db-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .db-stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .db-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .db-btn {
+            padding: 6px 12px;
+            border-radius: 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .db-save {
+            background: #4caf50;
+            color: white;
+        }
+        
+        .db-save:hover {
+            background: #388e3c;
+            transform: translateY(-2px);
+        }
+        
+        .db-clear {
+            background: #f44336;
+            color: white;
+        }
+        
+        .db-clear:hover {
+            background: #d32f2f;
+            transform: translateY(-2px);
+        }
+        
+        .db-export {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .db-export:hover {
+            background: #1976d2;
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -1144,9 +1175,9 @@
     <!-- Notificación flotante -->
     <div class="floating-notification" id="notification">
         <div class="notification-content">
-            <i class="fas fa-bell"></i>
+            <i class="fas fa-database"></i>
             <div>
-                <strong>Recordatorio:</strong> Puedes subir hasta 100 archivos simultáneamente.
+                <strong>Archivos guardados:</strong> Los archivos se guardan automáticamente en tu navegador.
             </div>
         </div>
         <button class="close-notification" id="closeNotification">
@@ -1209,6 +1240,34 @@
                     <i class="fas fa-check-circle"></i> ¡Archivos subidos exitosamente!
                 </div>
                 
+                <div class="db-info">
+                    <div class="db-stats">
+                        <div class="db-stat">
+                            <i class="fas fa-database"></i>
+                            <span id="dbSize">0 KB</span>
+                        </div>
+                        <div class="db-stat">
+                            <i class="fas fa-file"></i>
+                            <span id="dbCount">0 archivos</span>
+                        </div>
+                        <div class="db-stat">
+                            <i class="fas fa-save"></i>
+                            <span id="lastSave">Nunca</span>
+                        </div>
+                    </div>
+                    <div class="db-actions">
+                        <button class="db-btn db-save" id="saveNowBtn">
+                            <i class="fas fa-save"></i> Guardar ahora
+                        </button>
+                        <button class="db-btn db-export" id="exportBtn">
+                            <i class="fas fa-download"></i> Exportar
+                        </button>
+                        <button class="db-btn db-clear" id="clearDbBtn">
+                            <i class="fas fa-trash"></i> Limpiar
+                        </button>
+                    </div>
+                </div>
+                
                 <div class="instructions">
                     <h3><i class="fas fa-info-circle"></i> Instrucciones para subir archivos:</h3>
                     <ul>
@@ -1216,9 +1275,9 @@
                         <li>Límite de 100 archivos por carga y 10MB por archivo</li>
                         <li>Los archivos .py se muestran con resaltado de sintaxis automático</li>
                         <li>Haz clic en cualquier archivo para ver su contenido</li>
+                        <li>Todos los archivos se guardan automáticamente en tu navegador</li>
+                        <li>Los archivos permanecen incluso si cierras el navegador</li>
                         <li>Usa la barra de búsqueda para encontrar archivos específicos</li>
-                        <li>Filtra por tipo de archivo usando los botones de filtro</li>
-                        <li>Selecciona múltiples archivos para acciones en masa</li>
                     </ul>
                 </div>
             </section>
@@ -1299,12 +1358,6 @@
                         No hay archivos subidos todavía.<br>
                         ¡Sube tu primer archivo!
                     </div>
-                    
-                    <div class="pagination" id="pagination" style="display: none;">
-                        <button class="page-btn" id="prevPage"><i class="fas fa-chevron-left"></i></button>
-                        <span class="page-info" id="pageInfo">Página 1 de 1</span>
-                        <button class="page-btn" id="nextPage"><i class="fas fa-chevron-right"></i></button>
-                    </div>
                 </div>
                 
                 <!-- Bulk Actions -->
@@ -1366,26 +1419,29 @@
             const runCodeBtn = document.getElementById('runCodeBtn');
             const fullscreenBtn = document.getElementById('fullscreenBtn');
             const filterButtons = document.querySelectorAll('.filter-btn');
-            const prevPageBtn = document.getElementById('prevPage');
-            const nextPageBtn = document.getElementById('nextPage');
-            const pageInfo = document.getElementById('pageInfo');
-            const pagination = document.getElementById('pagination');
             const bulkActions = document.getElementById('bulkActions');
             const selectedCount = document.getElementById('selectedCount');
             const bulkDownload = document.getElementById('bulkDownload');
             const bulkDelete = document.getElementById('bulkDelete');
             const bulkClear = document.getElementById('bulkClear');
             const toastContainer = document.getElementById('toastContainer');
+            const dbSize = document.getElementById('dbSize');
+            const dbCount = document.getElementById('dbCount');
+            const lastSave = document.getElementById('lastSave');
+            const saveNowBtn = document.getElementById('saveNowBtn');
+            const exportBtn = document.getElementById('exportBtn');
+            const clearDbBtn = document.getElementById('clearDbBtn');
             
             // Variables globales
             let uploadedFiles = [];
             let currentFileIndex = -1;
             let currentFilter = 'all';
             let currentSearch = '';
-            let currentPage = 1;
-            const filesPerPage = 15;
             let selectedFiles = new Set();
-            let allFilesCheckbox = null;
+            
+            // Clave para localStorage
+            const STORAGE_KEY = 'una_lp2_archivos';
+            const LAST_SAVE_KEY = 'una_lp2_ultimo_guardado';
             
             // Crear partículas de fondo
             createParticles();
@@ -1409,18 +1465,34 @@
                 this.innerHTML = '<i class="fab fa-github"></i> Ver repositorio en GitHub';
             });
             
-            // Archivos de ejemplo previamente subidos
-            const sampleFiles = generateSampleFiles(15); // Generar 15 archivos de ejemplo
+            // Cargar archivos guardados desde localStorage
+            loadFromStorage();
             
-            // Mostrar archivos de ejemplo al cargar la página
-            loadSampleFiles();
+            // Si no hay archivos guardados, cargar ejemplos
+            if (uploadedFiles.length === 0) {
+                loadSampleFiles();
+            }
             
             // Función para generar archivos de ejemplo
+            function loadSampleFiles() {
+                const sampleFiles = generateSampleFiles(5);
+                uploadedFiles = [...sampleFiles];
+                updateFileList();
+                
+                // Mostrar el primer archivo por defecto
+                if (uploadedFiles.length > 0) {
+                    showFileContent(0);
+                }
+                
+                // Guardar automáticamente
+                saveToStorage();
+            }
+            
             function generateSampleFiles(count) {
                 const files = [];
-                const languages = ['py', 'java', 'cpp', 'js', 'txt', 'html', 'css'];
-                const languageNames = ['Python', 'Java', 'C++', 'JavaScript', 'Texto', 'HTML', 'CSS'];
-                const students = ['Juan Pérez', 'María López', 'Carlos Ramos', 'Ana García', 'Pedro Martínez', 'Lucía Fernández'];
+                const languages = ['py', 'java', 'cpp', 'js', 'txt'];
+                const languageNames = ['Python', 'Java', 'C++', 'JavaScript', 'Texto'];
+                const students = ['Juan Pérez', 'María López', 'Carlos Ramos', 'Ana García'];
                 
                 for (let i = 1; i <= count; i++) {
                     const langIndex = Math.floor(Math.random() * languages.length);
@@ -1429,6 +1501,7 @@
                     const code = generateSampleCode(lang);
                     
                     files.push({
+                        id: Date.now() + i,
                         name: `ejemplo_${i}.${lang}`,
                         size: formatFileSize(code.length),
                         date: generateRandomDate(),
@@ -1549,84 +1622,9 @@ El sistema permite:
 - Subir múltiples archivos
 - Visualizar código con resaltado de sintaxis
 - Buscar y filtrar archivos
-- Realizar acciones en masa
+- Los archivos se guardan automáticamente
 
-¡Bienvenido al sistema!`,
-                    
-                    'html': `<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ejemplo HTML - UNA Puno</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        h1 {
-            color: #0a2463;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Ejemplo de archivo HTML</h1>
-        <p>Este es un archivo HTML de ejemplo para el sistema de gestión de archivos.</p>
-        <p>Autor: Estudiante UNA Puno</p>
-        <p>Fecha: ${new Date().toLocaleDateString()}</p>
-    </div>
-</body>
-</html>`,
-                    
-                    'css': `/* Archivo CSS de ejemplo */
-/* Autor: Estudiante UNA Puno */
-/* Fecha: ${new Date().toLocaleDateString()} */
-
-:root {
-    --primary-color: #0a2463;
-    --secondary-color: #3a7bd5;
-    --text-color: #333;
-}
-
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 20px;
-    background-color: #f8f9ff;
-    color: var(--text-color);
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.header {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    padding: 30px;
-    border-radius: 10px;
-    margin-bottom: 30px;
-}
-
-.button {
-    background-color: var(--secondary-color);
-    color: white;
-    padding: 12px 24px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.button:hover {
-    background-color: var(--primary-color);
-}`
+¡Bienvenido al sistema!`
                 };
                 
                 return codes[language] || codes['txt'];
@@ -1665,18 +1663,7 @@ body {
                 }
             }
             
-            // Función para cargar archivos de ejemplo
-            function loadSampleFiles() {
-                uploadedFiles = [...sampleFiles];
-                updateFileList();
-                
-                // Mostrar el primer archivo por defecto
-                if (uploadedFiles.length > 0) {
-                    showFileContent(0);
-                }
-            }
-            
-            // Función para actualizar la lista de archivos
+            // Función para actualizar la lista de archivos (SIN PAGINACIÓN)
             function updateFileList() {
                 fileList.innerHTML = '';
                 
@@ -1708,22 +1695,13 @@ body {
                 
                 if (totalFiles === 0) {
                     emptyMessage.style.display = 'block';
-                    pagination.style.display = 'none';
                     return;
                 }
                 
                 emptyMessage.style.display = 'none';
                 
-                // Calcular paginación
-                const totalPages = Math.ceil(totalFiles / filesPerPage);
-                currentPage = Math.min(currentPage, totalPages);
-                
-                const startIndex = (currentPage - 1) * filesPerPage;
-                const endIndex = Math.min(startIndex + filesPerPage, totalFiles);
-                const pageFiles = filteredFiles.slice(startIndex, endIndex);
-                
-                // Crear elementos de archivo
-                pageFiles.forEach((fileData, index) => {
+                // Mostrar TODOS los archivos filtrados
+                filteredFiles.forEach((fileData, index) => {
                     const globalIndex = uploadedFiles.findIndex(f => f === fileData);
                     const fileItem = createFileElement(fileData, globalIndex);
                     fileList.appendChild(fileItem);
@@ -1736,10 +1714,7 @@ body {
                     }
                 });
                 
-                // Actualizar paginación
-                updatePagination(totalPages);
-                
-                // Mostrar u ocultar acciones en masa
+                // Actualizar acciones en masa
                 updateBulkActions();
             }
             
@@ -2055,6 +2030,7 @@ body {
                         
                         // Crear objeto de archivo
                         const fileData = {
+                            id: Date.now() + i, // ID único
                             name: file.name,
                             size: formatFileSize(file.size),
                             date: new Date().toISOString().split('T')[0],
@@ -2082,6 +2058,9 @@ body {
                 if (newFiles.length > 0) {
                     showFileContent(0);
                 }
+                
+                // Guardar automáticamente en localStorage
+                saveToStorage();
                 
                 showToast(`${newFiles.length} archivo(s) subido(s) exitosamente`, 'success');
             }
@@ -2149,6 +2128,9 @@ body {
                             
                             // Actualizar lista
                             updateFileList();
+                            
+                            // Guardar cambios en localStorage
+                            saveToStorage();
                         }, 300);
                         
                         showToast(`Archivo eliminado: ${fileData.name}`, 'warning');
@@ -2229,6 +2211,9 @@ body {
                         }
                     }
                     
+                    // Guardar cambios
+                    saveToStorage();
+                    
                     showToast(`${indicesToDelete.length} archivo(s) eliminado(s)`, 'warning');
                 }
             }
@@ -2243,6 +2228,187 @@ body {
                     return (bytes / 1048576).toFixed(1) + ' MB';
                 } else {
                     return (bytes / 1073741824).toFixed(1) + ' GB';
+                }
+            }
+            
+            // ==================== LOCALSTORAGE FUNCTIONS ====================
+            
+            // Función para guardar archivos en localStorage
+            function saveToStorage() {
+                try {
+                    // Crear copia optimizada para almacenamiento
+                    const filesToSave = uploadedFiles.map(file => ({
+                        id: file.id || Date.now(),
+                        name: file.name,
+                        size: file.size,
+                        date: file.date,
+                        student: file.student,
+                        content: file.content,
+                        type: file.type,
+                        uploadedAt: file.uploadedAt || new Date().toISOString()
+                    }));
+                    
+                    // Guardar en localStorage
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(filesToSave));
+                    localStorage.setItem(LAST_SAVE_KEY, new Date().toISOString());
+                    
+                    // Actualizar estadísticas
+                    updateDbStats();
+                    
+                    showToast('Archivos guardados exitosamente', 'success');
+                    return true;
+                } catch (error) {
+                    console.error('Error al guardar en localStorage:', error);
+                    
+                    // Verificar si es error de quota excedida
+                    if (error.name === 'QuotaExceededError') {
+                        showToast('Espacio de almacenamiento lleno. Algunos archivos no se guardaron.', 'error');
+                        
+                        // Intentar guardar solo los últimos 50 archivos
+                        try {
+                            const limitedFiles = uploadedFiles.slice(0, 50);
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(limitedFiles));
+                            updateDbStats();
+                            showToast('Guardados los últimos 50 archivos (espacio limitado)', 'warning');
+                        } catch (e) {
+                            showToast('No se pudo guardar ningún archivo. Espacio insuficiente.', 'error');
+                        }
+                    } else {
+                        showToast('Error al guardar archivos', 'error');
+                    }
+                    return false;
+                }
+            }
+            
+            // Función para cargar archivos desde localStorage
+            function loadFromStorage() {
+                try {
+                    const savedData = localStorage.getItem(STORAGE_KEY);
+                    if (savedData) {
+                        const parsedFiles = JSON.parse(savedData);
+                        
+                        // Validar que los datos sean correctos
+                        if (Array.isArray(parsedFiles)) {
+                            uploadedFiles = parsedFiles;
+                            updateFileList();
+                            updateDbStats();
+                            
+                            // Mostrar último guardado
+                            const lastSave = localStorage.getItem(LAST_SAVE_KEY);
+                            if (lastSave) {
+                                const lastSaveDate = new Date(lastSave);
+                                const now = new Date();
+                                const diffMs = now - lastSaveDate;
+                                const diffMins = Math.floor(diffMs / 60000);
+                                
+                                if (diffMins < 1) {
+                                    lastSave.textContent = 'Hace unos segundos';
+                                } else if (diffMins < 60) {
+                                    lastSave.textContent = `Hace ${diffMins} min`;
+                                } else {
+                                    lastSave.textContent = lastSaveDate.toLocaleString();
+                                }
+                            }
+                            
+                            // Mostrar primer archivo si existe
+                            if (uploadedFiles.length > 0) {
+                                showFileContent(0);
+                            }
+                            
+                            showToast(`${uploadedFiles.length} archivos cargados desde almacenamiento`, 'success');
+                            return true;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error al cargar desde localStorage:', error);
+                    showToast('Error al cargar archivos guardados', 'error');
+                }
+                return false;
+            }
+            
+            // Función para actualizar estadísticas de la base de datos
+            function updateDbStats() {
+                try {
+                    // Calcular tamaño total
+                    const totalSize = JSON.stringify(uploadedFiles).length;
+                    dbSize.textContent = formatFileSize(totalSize);
+                    
+                    // Actualizar contador
+                    dbCount.textContent = `${uploadedFiles.length} archivos`;
+                    
+                    // Actualizar último guardado
+                    const lastSave = localStorage.getItem(LAST_SAVE_KEY);
+                    if (lastSave) {
+                        const lastSaveDate = new Date(lastSave);
+                        const now = new Date();
+                        const diffMs = now - lastSaveDate;
+                        const diffMins = Math.floor(diffMs / 60000);
+                        
+                        if (diffMins < 1) {
+                            document.getElementById('lastSave').textContent = 'Hace unos segundos';
+                        } else if (diffMins < 60) {
+                            document.getElementById('lastSave').textContent = `Hace ${diffMins} min`;
+                        } else {
+                            document.getElementById('lastSave').textContent = lastSaveDate.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error al actualizar estadísticas:', error);
+                }
+            }
+            
+            // Función para exportar todos los archivos
+            async function exportAllFiles() {
+                try {
+                    showToast(`Preparando ${uploadedFiles.length} archivos para exportación...`, 'info');
+                    
+                    const zip = new JSZip();
+                    
+                    // Agregar todos los archivos al zip
+                    uploadedFiles.forEach((fileData, index) => {
+                        zip.file(fileData.name, fileData.content);
+                    });
+                    
+                    // Agregar un archivo README con información
+                    const readmeContent = `Archivos exportados del sistema LP2 - UNA Puno
+Fecha de exportación: ${new Date().toLocaleString()}
+Total de archivos: ${uploadedFiles.length}
+
+Lista de archivos:
+${uploadedFiles.map(f => `- ${f.name} (${f.size}, ${f.date}, ${f.student})`).join('\n')}`;
+                    
+                    zip.file('README.txt', readmeContent);
+                    
+                    // Generar el archivo zip
+                    const content = await zip.generateAsync({type: 'blob'});
+                    
+                    // Descargar el zip
+                    const element = document.createElement('a');
+                    element.href = URL.createObjectURL(content);
+                    element.download = `una_lp2_export_${new Date().toISOString().split('T')[0]}.zip`;
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+                    
+                    showToast(`${uploadedFiles.length} archivos exportados exitosamente`, 'success');
+                    
+                } catch (error) {
+                    console.error('Error al exportar archivos:', error);
+                    showToast('Error al exportar archivos', 'error');
+                }
+            }
+            
+            // Función para limpiar localStorage
+            function clearStorage() {
+                if (confirm('¿Estás seguro de que quieres eliminar TODOS los archivos guardados? Esta acción no se puede deshacer.')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    localStorage.removeItem(LAST_SAVE_KEY);
+                    uploadedFiles = [];
+                    selectedFiles.clear();
+                    updateFileList();
+                    showEmptyCodeViewer();
+                    updateDbStats();
+                    showToast('Todos los archivos han sido eliminados', 'warning');
                 }
             }
             
@@ -2347,7 +2513,6 @@ body {
                     
                     // Aplicar filtro
                     currentFilter = this.dataset.filter;
-                    currentPage = 1;
                     updateFileList();
                 });
             });
@@ -2355,42 +2520,8 @@ body {
             // Evento de búsqueda
             fileSearch.addEventListener('input', function() {
                 currentSearch = this.value;
-                currentPage = 1;
                 updateFileList();
             });
-            
-            // Eventos de paginación
-            prevPageBtn.addEventListener('click', function() {
-                if (currentPage > 1) {
-                    currentPage--;
-                    updateFileList();
-                }
-            });
-            
-            nextPageBtn.addEventListener('click', function() {
-                const totalFiles = currentFilter === 'all' ? uploadedFiles.length : 
-                    uploadedFiles.filter(f => f.type === currentFilter).length;
-                const totalPages = Math.ceil(totalFiles / filesPerPage);
-                
-                if (currentPage < totalPages) {
-                    currentPage++;
-                    updateFileList();
-                }
-            });
-            
-            // Actualizar paginación
-            function updatePagination(totalPages) {
-                if (totalPages <= 1) {
-                    pagination.style.display = 'none';
-                    return;
-                }
-                
-                pagination.style.display = 'flex';
-                pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
-                
-                prevPageBtn.disabled = currentPage === 1;
-                nextPageBtn.disabled = currentPage === totalPages;
-            }
             
             // Actualizar acciones en masa
             function updateBulkActions() {
@@ -2422,21 +2553,23 @@ body {
                 updateBulkActions();
             });
             
-            // Document event para seleccionar/deseleccionar todos
-            document.addEventListener('click', function(e) {
-                // Checkbox "seleccionar todo" (si se implementa)
-                if (e.target.id === 'selectAllCheckbox') {
-                    const isChecked = e.target.checked;
-                    document.querySelectorAll('.file-checkbox').forEach(checkbox => {
-                        checkbox.checked = isChecked;
-                        const index = parseInt(checkbox.dataset.index);
-                        if (isChecked) {
-                            selectedFiles.add(index);
-                        } else {
-                            selectedFiles.delete(index);
-                        }
-                    });
-                    updateBulkActions();
+            // Eventos para localStorage
+            saveNowBtn.addEventListener('click', function() {
+                if (saveToStorage()) {
+                    this.innerHTML = '<i class="fas fa-check"></i> ¡Guardado!';
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-save"></i> Guardar ahora';
+                    }, 2000);
+                }
+            });
+            
+            exportBtn.addEventListener('click', exportAllFiles);
+            clearDbBtn.addEventListener('click', clearStorage);
+            
+            // Guardar automáticamente antes de que el usuario cierre la página
+            window.addEventListener('beforeunload', function() {
+                if (uploadedFiles.length > 0) {
+                    saveToStorage();
                 }
             });
             
@@ -2462,6 +2595,9 @@ body {
                 el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
                 observer.observe(el);
             });
+            
+            // Inicializar estadísticas
+            updateDbStats();
         });
     </script>
 </body>
