@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LP2 - Universidad Nacional del Altiplano</title>
+    <title>LP2 - Sistema de Gestión de Archivos Python | UNA Puno</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/atom-one-dark.min.css">
@@ -25,6 +25,9 @@
             --shadow: rgba(10, 36, 99, 0.15);
             --gradient-primary: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
             --gradient-secondary: linear-gradient(135deg, var(--accent-blue) 0%, var(--light-blue) 100%);
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --error-color: #dc3545;
         }
         
         body {
@@ -44,7 +47,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
@@ -195,6 +198,7 @@
             border-bottom: 4px solid var(--accent-blue);
             display: flex;
             align-items: center;
+            justify-content: space-between;
             position: relative;
         }
         
@@ -329,7 +333,7 @@
             background: #282c34;
             border-radius: 15px;
             padding: 25px;
-            height: 500px;
+            height: 550px;
             overflow-y: auto;
             margin-bottom: 25px;
             box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
@@ -428,9 +432,90 @@
         }
         
         /* File List */
+        .files-section {
+            max-height: 750px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .file-list-container {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .file-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px 0;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .file-count {
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+            background: var(--off-white);
+            padding: 5px 15px;
+            border-radius: 20px;
+        }
+        
+        .file-filters {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            background: var(--off-white);
+            border: 1px solid var(--accent-blue);
+            color: var(--accent-blue);
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover, .filter-btn.active {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .file-search {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid var(--accent-blue);
+            border-radius: 25px;
+            font-size: 1rem;
+            background: var(--off-white);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.2);
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-blue);
+        }
+        
         .file-list {
             list-style-type: none;
-            max-height: 450px;
+            flex: 1;
             overflow-y: auto;
             padding-right: 10px;
         }
@@ -456,10 +541,10 @@
         .file-item {
             display: flex;
             align-items: center;
-            padding: 20px;
+            padding: 15px;
             border-radius: 15px;
             background: linear-gradient(135deg, var(--off-white) 0%, #ffffff 100%);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             border-left: 6px solid var(--accent-blue);
             transition: all 0.4s ease;
             position: relative;
@@ -467,6 +552,14 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
             cursor: pointer;
         }
+        
+        .file-item.py { border-left-color: #3572A5; }
+        .file-item.java { border-left-color: #B07219; }
+        .file-item.cpp { border-left-color: #F34B7D; }
+        .file-item.js { border-left-color: #F1E05A; }
+        .file-item.txt { border-left-color: #888; }
+        .file-item.html { border-left-color: #E34C26; }
+        .file-item.css { border-left-color: #563D7C; }
         
         .file-item.active {
             border-left: 6px solid #28a745;
@@ -495,16 +588,16 @@
         }
         
         .file-icon {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: var(--gradient-primary);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 20px;
+            margin-right: 15px;
             color: white;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             box-shadow: 0 5px 15px rgba(10, 36, 99, 0.2);
             transition: transform 0.3s ease;
         }
@@ -513,31 +606,49 @@
             transform: rotate(10deg) scale(1.1);
         }
         
+        .file-info {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+        }
+        
         .file-info h4 {
             color: var(--primary-blue);
-            margin-bottom: 8px;
-            font-size: 1.3rem;
+            margin-bottom: 5px;
+            font-size: 1.2rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .file-info p {
             color: #777;
-            font-size: 1rem;
-        }
-        
-        .file-actions {
-            margin-left: auto;
+            font-size: 0.9rem;
             display: flex;
+            flex-wrap: wrap;
             gap: 10px;
         }
         
+        .file-stats {
+            display: flex;
+            gap: 10px;
+            font-size: 0.85rem;
+        }
+        
+        .file-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
         .file-action-btn {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: var(--off-white);
             border: 2px solid var(--accent-blue);
             color: var(--accent-blue);
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -625,6 +736,82 @@
             0% { transform: scale(0.5); opacity: 0; }
             70% { transform: scale(1.05); }
             100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* Bulk Actions */
+        .bulk-actions {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            background: var(--off-white);
+            border-radius: 15px;
+            border-left: 6px solid var(--warning-color);
+            animation: slideInUp 0.3s ease;
+        }
+        
+        @keyframes slideInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .bulk-actions-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .selected-count {
+            font-weight: bold;
+            color: var(--primary-blue);
+        }
+        
+        .bulk-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .bulk-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .bulk-download {
+            background: var(--accent-blue);
+            color: white;
+        }
+        
+        .bulk-download:hover {
+            background: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+        
+        .bulk-delete {
+            background: var(--error-color);
+            color: white;
+        }
+        
+        .bulk-delete:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+        
+        .bulk-clear {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .bulk-clear:hover {
+            background: #545b62;
+            transform: translateY(-2px);
         }
         
         /* Footer */
@@ -788,7 +975,7 @@
             display: none;
             z-index: 1000;
             animation: slideInRight 0.5s ease-out;
-            max-width: 350px;
+            max-width: 400px;
         }
         
         @keyframes slideInRight {
@@ -828,6 +1015,122 @@
             .upload-area { padding: 40px 20px; }
             .upload-btn { padding: 15px 30px; font-size: 1.1rem; }
             .university-logo { position: static; justify-content: center; margin-bottom: 15px; }
+            .file-item { padding: 12px; }
+            .file-actions { flex-direction: column; }
+            .file-action-btn { width: 35px; height: 35px; }
+            .bulk-actions-content { flex-direction: column; align-items: stretch; }
+            .bulk-buttons { flex-wrap: wrap; justify-content: center; }
+        }
+        
+        /* Checkbox for bulk selection */
+        .file-checkbox {
+            margin-right: 15px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-blue);
+            background: white;
+            color: var(--accent-blue);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .page-btn:hover:not(:disabled) {
+            background: var(--accent-blue);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .page-info {
+            margin: 0 15px;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        
+        /* Loading spinner */
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--accent-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Toast notifications */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1001;
+            max-width: 400px;
+        }
+        
+        .toast {
+            background: white;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            animation: slideInRight 0.3s ease;
+            border-left: 5px solid var(--accent-blue);
+        }
+        
+        .toast.success { border-left-color: var(--success-color); }
+        .toast.warning { border-left-color: var(--warning-color); }
+        .toast.error { border-left-color: var(--error-color); }
+        
+        .toast i {
+            font-size: 1.5rem;
+            margin-right: 15px;
+        }
+        
+        .toast.success i { color: var(--success-color); }
+        .toast.warning i { color: var(--warning-color); }
+        .toast.error i { color: var(--error-color); }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-close {
+            background: none;
+            border: none;
+            color: #888;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -835,12 +1138,15 @@
     <!-- Partículas de fondo -->
     <div class="particles" id="particles"></div>
     
+    <!-- Toast notifications container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
     <!-- Notificación flotante -->
     <div class="floating-notification" id="notification">
         <div class="notification-content">
             <i class="fas fa-bell"></i>
             <div>
-                <strong>Recordatorio:</strong> La fecha límite para la tarea 3 es el 15 de Octubre.
+                <strong>Recordatorio:</strong> Puedes subir hasta 100 archivos simultáneamente.
             </div>
         </div>
         <button class="close-notification" id="closeNotification">
@@ -879,14 +1185,15 @@
         
         <main>
             <section class="upload-section animate__animated animate__fadeInLeft">
-                <h2 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Subir Archivo</h2>
+                <h2 class="section-title"><i class="fas fa-cloud-upload-alt"></i> Subir Archivos</h2>
                 <div class="upload-area" id="dropArea">
                     <i class="fas fa-file-upload"></i>
-                    <h3>Arrastra y suelta tus archivos .py aquí</h3>
-                    <p>o haz clic para seleccionar archivos</p>
-                    <p>Formatos permitidos: .py (Python), .txt, .java, .cpp</p>
+                    <h3>Arrastra y suelta hasta 100 archivos aquí</h3>
+                    <p>o haz clic para seleccionar múltiples archivos</p>
+                    <p>Formatos permitidos: .py, .txt, .java, .cpp, .js, .html, .css</p>
+                    <p><strong>Límite: 100 archivos por lote | Tamaño máximo: 10MB por archivo</strong></p>
                     <button class="upload-btn" id="selectFileBtn">
-                        <i class="fas fa-folder-open"></i> Seleccionar Archivo
+                        <i class="fas fa-folder-open"></i> Seleccionar Archivos
                     </button>
                     <input type="file" class="file-input" id="fileInput" accept=".py,.txt,.java,.cpp,.js,.html,.css" multiple>
                 </div>
@@ -895,22 +1202,23 @@
                     <div class="progress-bar">
                         <div class="progress-fill" id="progressFill"></div>
                     </div>
-                    <p class="progress-text" id="progressText">Subiendo archivo... 0%</p>
+                    <p class="progress-text" id="progressText">Procesando archivos... 0%</p>
                 </div>
                 
                 <div class="success-message" id="successMessage">
-                    <i class="fas fa-check-circle"></i> ¡Archivo subido exitosamente!
+                    <i class="fas fa-check-circle"></i> ¡Archivos subidos exitosamente!
                 </div>
                 
                 <div class="instructions">
                     <h3><i class="fas fa-info-circle"></i> Instrucciones para subir archivos:</h3>
                     <ul>
-                        <li>Sube archivos .py para visualizar el código directamente</li>
+                        <li>Puedes seleccionar múltiples archivos manteniendo presionada la tecla Ctrl (Windows) o Cmd (Mac)</li>
+                        <li>Límite de 100 archivos por carga y 10MB por archivo</li>
+                        <li>Los archivos .py se muestran con resaltado de sintaxis automático</li>
                         <li>Haz clic en cualquier archivo para ver su contenido</li>
-                        <li>Usa el botón "Copiar código" para copiar al portapapeles</li>
-                        <li>Puedes descargar el archivo original con el botón de descarga</li>
-                        <li>El sistema resalta la sintaxis de Python automáticamente</li>
-                        <li>Incluye comentarios en tu código con tu nombre y código de estudiante</li>
+                        <li>Usa la barra de búsqueda para encontrar archivos específicos</li>
+                        <li>Filtra por tipo de archivo usando los botones de filtro</li>
+                        <li>Selecciona múltiples archivos para acciones en masa</li>
                     </ul>
                 </div>
             </section>
@@ -921,7 +1229,7 @@
                     <div class="code-header">
                         <div class="code-title" id="codeFileName">
                             <i class="fab fa-python"></i>
-                            <span id="currentFile">Selecciona un archivo .py para ver el código</span>
+                            <span id="currentFile">Selecciona un archivo para ver el código</span>
                         </div>
                         <div class="code-actions" id="codeActions" style="display: none;">
                             <button class="code-action-btn" id="copyCodeBtn">
@@ -933,6 +1241,9 @@
                             <button class="code-action-btn" id="runCodeBtn">
                                 <i class="fas fa-play"></i> Ejecutar
                             </button>
+                            <button class="code-action-btn" id="fullscreenBtn">
+                                <i class="fas fa-expand"></i> Pantalla completa
+                            </button>
                         </div>
                     </div>
                     <div class="line-numbers" id="lineNumbers"></div>
@@ -940,7 +1251,7 @@
 <div class="no-code">
     <i class="fas fa-file-code"></i>
     <h3>No hay código para mostrar</h3>
-    <p>Sube un archivo .py o haz clic en uno de la lista</p>
+    <p>Sube un archivo o haz clic en uno de la lista</p>
 </div>
                     </code></pre>
                 </div>
@@ -948,26 +1259,71 @@
                 <div class="instructions">
                     <h3><i class="fas fa-eye"></i> Características del visualizador:</h3>
                     <ul>
-                        <li>Resaltado de sintaxis para Python</li>
+                        <li>Resaltado de sintaxis para múltiples lenguajes</li>
                         <li>Números de línea para referencia</li>
-                        <li>Capacidad de copiar código al portapapeles</li>
+                        <li>Modo pantalla completa para mejor visibilidad</li>
+                        <li>Copiar código al portapapeles con un clic</li>
                         <li>Descarga del archivo original</li>
-                        <li>Simulación de ejecución (no real)</li>
-                        <li>Soporte para archivos de hasta 10,000 líneas</li>
+                        <li>Simulación de ejecución de código Python</li>
+                        <li>Soporte para archivos grandes (hasta 50,000 líneas)</li>
                     </ul>
                 </div>
             </section>
             
             <section class="files-section animate__animated animate__fadeInRight">
                 <h2 class="section-title"><i class="fas fa-file-alt"></i> Archivos Subidos</h2>
-                <ul class="file-list" id="fileList">
-                    <!-- Los archivos se agregarán aquí dinámicamente -->
-                </ul>
-                <p id="emptyMessage">
-                    <i class="fas fa-folder-open"></i><br>
-                    No hay archivos subidos todavía.<br>
-                    ¡Sube tu primer archivo!
-                </p>
+                
+                <div class="file-list-container">
+                    <div class="file-list-header">
+                        <div class="file-count" id="fileCount">0 archivos</div>
+                        <div class="file-filters">
+                            <button class="filter-btn active" data-filter="all">Todos</button>
+                            <button class="filter-btn" data-filter="py">Python</button>
+                            <button class="filter-btn" data-filter="java">Java</button>
+                            <button class="filter-btn" data-filter="txt">Texto</button>
+                            <button class="filter-btn" data-filter="other">Otros</button>
+                        </div>
+                    </div>
+                    
+                    <div class="file-search">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" id="fileSearch" placeholder="Buscar archivos por nombre...">
+                    </div>
+                    
+                    <ul class="file-list" id="fileList">
+                        <!-- Los archivos se agregarán aquí dinámicamente -->
+                    </ul>
+                    
+                    <div id="emptyMessage" style="display: block;">
+                        <i class="fas fa-folder-open"></i><br>
+                        No hay archivos subidos todavía.<br>
+                        ¡Sube tu primer archivo!
+                    </div>
+                    
+                    <div class="pagination" id="pagination" style="display: none;">
+                        <button class="page-btn" id="prevPage"><i class="fas fa-chevron-left"></i></button>
+                        <span class="page-info" id="pageInfo">Página 1 de 1</span>
+                        <button class="page-btn" id="nextPage"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+                
+                <!-- Bulk Actions -->
+                <div class="bulk-actions" id="bulkActions">
+                    <div class="bulk-actions-content">
+                        <div class="selected-count" id="selectedCount">0 archivos seleccionados</div>
+                        <div class="bulk-buttons">
+                            <button class="bulk-btn bulk-download" id="bulkDownload">
+                                <i class="fas fa-download"></i> Descargar seleccionados
+                            </button>
+                            <button class="bulk-btn bulk-delete" id="bulkDelete">
+                                <i class="fas fa-trash"></i> Eliminar seleccionados
+                            </button>
+                            <button class="bulk-btn bulk-clear" id="bulkClear">
+                                <i class="fas fa-times"></i> Limpiar selección
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </section>
         </main>
         
@@ -981,6 +1337,7 @@
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Elementos del DOM
@@ -993,6 +1350,8 @@
             const successMessage = document.getElementById('successMessage');
             const fileList = document.getElementById('fileList');
             const emptyMessage = document.getElementById('emptyMessage');
+            const fileCount = document.getElementById('fileCount');
+            const fileSearch = document.getElementById('fileSearch');
             const notification = document.getElementById('notification');
             const closeNotification = document.getElementById('closeNotification');
             const githubLink = document.getElementById('githubLink');
@@ -1005,10 +1364,28 @@
             const copyCodeBtn = document.getElementById('copyCodeBtn');
             const downloadCodeBtn = document.getElementById('downloadCodeBtn');
             const runCodeBtn = document.getElementById('runCodeBtn');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const prevPageBtn = document.getElementById('prevPage');
+            const nextPageBtn = document.getElementById('nextPage');
+            const pageInfo = document.getElementById('pageInfo');
+            const pagination = document.getElementById('pagination');
+            const bulkActions = document.getElementById('bulkActions');
+            const selectedCount = document.getElementById('selectedCount');
+            const bulkDownload = document.getElementById('bulkDownload');
+            const bulkDelete = document.getElementById('bulkDelete');
+            const bulkClear = document.getElementById('bulkClear');
+            const toastContainer = document.getElementById('toastContainer');
             
             // Variables globales
             let uploadedFiles = [];
             let currentFileIndex = -1;
+            let currentFilter = 'all';
+            let currentSearch = '';
+            let currentPage = 1;
+            const filesPerPage = 15;
+            let selectedFiles = new Set();
+            let allFilesCheckbox = null;
             
             // Crear partículas de fondo
             createParticles();
@@ -1032,287 +1409,256 @@
                 this.innerHTML = '<i class="fab fa-github"></i> Ver repositorio en GitHub';
             });
             
-            // Archivos de ejemplo previamente subidos (con contenido real de Python)
-            const sampleFiles = [
-                { 
-                    name: "calculadora_basica.py", 
-                    size: "1.2 KB", 
-                    date: "2025-09-10", 
-                    student: "Juan Pérez",
-                    content: `#!/usr/bin/env python3
-# Calculadora básica en Python
-# Autor: Juan Pérez
-# Código: 20230001
-
-def suma(a, b):
-    """Suma dos números y retorna el resultado"""
-    return a + b
-
-def resta(a, b):
-    """Resta dos números y retorna el resultado"""
-    return a - b
-
-def multiplicacion(a, b):
-    """Multiplica dos números y retorna el resultado"""
-    return a * b
-
-def division(a, b):
-    """Divide dos números y retorna el resultado"""
-    if b == 0:
-        return "Error: División por cero"
-    return a / b
-
-def calculadora():
-    """Función principal de la calculadora"""
-    print("=== CALCULADORA BÁSICA ===")
-    print("Operaciones disponibles:")
-    print("1. Suma")
-    print("2. Resta")
-    print("3. Multiplicación")
-    print("4. División")
-    print("5. Salir")
-    
-    while True:
-        try:
-            opcion = input("\\nSelecciona una operación (1-5): ")
-            
-            if opcion == '5':
-                print("¡Hasta luego!")
-                break
-                
-            if opcion not in ['1', '2', '3', '4']:
-                print("Opción no válida. Intenta de nuevo.")
-                continue
-                
-            num1 = float(input("Ingresa el primer número: "))
-            num2 = float(input("Ingresa el segundo número: "))
-            
-            if opcion == '1':
-                resultado = suma(num1, num2)
-                print(f"Resultado: {num1} + {num2} = {resultado}")
-            elif opcion == '2':
-                resultado = resta(num1, num2)
-                print(f"Resultado: {num1} - {num2} = {resultado}")
-            elif opcion == '3':
-                resultado = multiplicacion(num1, num2)
-                print(f"Resultado: {num1} * {num2} = {resultado}")
-            elif opcion == '4':
-                resultado = division(num1, num2)
-                print(f"Resultado: {num1} / {num2} = {resultado}")
-                
-        except ValueError:
-            print("Error: Debes ingresar números válidos")
-        except KeyboardInterrupt:
-            print("\\nPrograma interrumpido por el usuario")
-            break
-
-if __name__ == "__main__":
-    calculadora()`
-                },
-                { 
-                    name: "fibonacci_recursivo.py", 
-                    size: "0.8 KB", 
-                    date: "2025-09-08", 
-                    student: "María López",
-                    content: `# Cálculo de la secuencia Fibonacci usando recursión
-# Autor: María López
-# Código: 20230002
-
-def fibonacci(n):
-    """
-    Calcula el n-ésimo número de la secuencia Fibonacci.
-    
-    Args:
-        n (int): Posición en la secuencia Fibonacci
-        
-    Returns:
-        int: El n-ésimo número de Fibonacci
-    """
-    if n <= 0:
-        return 0
-    elif n == 1:
-        return 1
-    else:
-        return fibonacci(n-1) + fibonacci(n-2)
-
-def fibonacci_series(n):
-    """
-    Genera una lista con los primeros n números de Fibonacci.
-    
-    Args:
-        n (int): Cantidad de números a generar
-        
-    Returns:
-        list: Lista con los números de Fibonacci
-    """
-    series = []
-    for i in range(n):
-        series.append(fibonacci(i))
-    return series
-
-def main():
-    """Función principal del programa"""
-    print("=== SECUENCIA FIBONACCI ===")
-    
-    try:
-        n = int(input("¿Cuántos números de Fibonacci quieres generar? "))
-        
-        if n <= 0:
-            print("Por favor ingresa un número positivo.")
-            return
-            
-        print(f"\\nLos primeros {n} números de Fibonacci son:")
-        fib_series = fibonacci_series(n)
-        
-        for i, num in enumerate(fib_series):
-            print(f"Fibonacci({i}) = {num}")
-            
-        print(f"\\nFibonacci({n-1}) = {fib_series[-1]}")
-        
-    except ValueError:
-        print("Error: Debes ingresar un número entero válido")
-
-if __name__ == "__main__":
-    main()`
-                },
-                { 
-                    name: "ordenamiento_burbuja.py", 
-                    size: "1.5 KB", 
-                    date: "2025-09-05", 
-                    student: "Carlos Ramos",
-                    content: `# Algoritmo de ordenamiento burbuja
-# Autor: Carlos Ramos
-# Código: 20230003
-
-def bubble_sort(arr):
-    """
-    Implementación del algoritmo de ordenamiento burbuja.
-    
-    Args:
-        arr (list): Lista de números a ordenar
-        
-    Returns:
-        list: Lista ordenada en forma ascendente
-    """
-    n = len(arr)
-    
-    # Hacer una copia para no modificar el original
-    sorted_arr = arr.copy()
-    
-    # Bandera para optimización
-    swapped = True
-    
-    # Contadores para estadísticas
-    comparisons = 0
-    swaps = 0
-    
-    print("\\n=== PROCESO DE ORDENAMIENTO ===")
-    
-    for i in range(n-1):
-        if not swapped:
-            # Si no hubo intercambios en la pasada anterior, ya está ordenado
-            break
-            
-        swapped = False
-        print(f"\\nPasada {i+1}:")
-        
-        for j in range(0, n-i-1):
-            comparisons += 1
-            
-            if sorted_arr[j] > sorted_arr[j+1]:
-                # Intercambiar elementos
-                sorted_arr[j], sorted_arr[j+1] = sorted_arr[j+1], sorted_arr[j]
-                swaps += 1
-                swapped = True
-                
-                print(f"  Intercambio {j} y {j+1}: {sorted_arr}")
-    
-    print(f"\\n=== ESTADÍSTICAS ===")
-    print(f"Comparaciones realizadas: {comparisons}")
-    print(f"Intercambios realizados: {swaps}")
-    
-    return sorted_arr
-
-def generar_lista_aleatoria(n, min_val=1, max_val=100):
-    """
-    Genera una lista de números aleatorios.
-    
-    Args:
-        n (int): Cantidad de números
-        min_val (int): Valor mínimo
-        max_val (int): Valor máximo
-        
-    Returns:
-        list: Lista de números aleatorios
-    """
-    import random
-    return [random.randint(min_val, max_val) for _ in range(n)]
-
-def main():
-    """Función principal del programa"""
-    print("=== ORDENAMIENTO BURBUJA ===")
-    
-    try:
-        n = int(input("¿Cuántos números quieres ordenar? "))
-        
-        if n <= 0:
-            print("Por favor ingresa un número positivo.")
-            return
-        
-        # Generar lista aleatoria
-        lista = generar_lista_aleatoria(n)
-        print(f"\\nLista original: {lista}")
-        
-        # Ordenar la lista
-        lista_ordenada = bubble_sort(lista)
-        
-        print(f"\\nLista ordenada: {lista_ordenada}")
-        
-        # Verificar que esté ordenada
-        if lista_ordenada == sorted(lista):
-            print("✓ La lista fue ordenada correctamente")
-        else:
-            print("✗ Hubo un error en el ordenamiento")
-            
-    except ValueError:
-        print("Error: Debes ingresar un número entero válido")
-
-if __name__ == "__main__":
-    main()`
-                }
-            ];
+            // Archivos de ejemplo previamente subidos
+            const sampleFiles = generateSampleFiles(15); // Generar 15 archivos de ejemplo
             
             // Mostrar archivos de ejemplo al cargar la página
             loadSampleFiles();
             
+            // Función para generar archivos de ejemplo
+            function generateSampleFiles(count) {
+                const files = [];
+                const languages = ['py', 'java', 'cpp', 'js', 'txt', 'html', 'css'];
+                const languageNames = ['Python', 'Java', 'C++', 'JavaScript', 'Texto', 'HTML', 'CSS'];
+                const students = ['Juan Pérez', 'María López', 'Carlos Ramos', 'Ana García', 'Pedro Martínez', 'Lucía Fernández'];
+                
+                for (let i = 1; i <= count; i++) {
+                    const langIndex = Math.floor(Math.random() * languages.length);
+                    const lang = languages[langIndex];
+                    const student = students[Math.floor(Math.random() * students.length)];
+                    const code = generateSampleCode(lang);
+                    
+                    files.push({
+                        name: `ejemplo_${i}.${lang}`,
+                        size: formatFileSize(code.length),
+                        date: generateRandomDate(),
+                        student: student,
+                        content: code,
+                        type: lang,
+                        uploadedAt: new Date().toISOString()
+                    });
+                }
+                
+                return files;
+            }
+            
+            function generateSampleCode(language) {
+                const codes = {
+                    'py': `# Ejemplo de código Python
+# Autor: Estudiante UNA Puno
+# Fecha: ${new Date().toLocaleDateString()}
+
+def main():
+    print("Hola Mundo desde Python!")
+    numeros = [1, 2, 3, 4, 5]
+    suma = sum(numeros)
+    print(f"La suma es: {suma}")
+    
+    # Ejemplo de bucle
+    for i in range(5):
+        print(f"Iteración {i}")
+    
+    return suma
+
+if __name__ == "__main__":
+    resultado = main()
+    print(f"Resultado final: {resultado}")`,
+                    
+                    'java': `// Ejemplo de código Java
+// Autor: Estudiante UNA Puno
+// Fecha: ${new Date().toLocaleDateString()}
+
+public class Ejemplo {
+    public static void main(String[] args) {
+        System.out.println("Hola Mundo desde Java!");
+        
+        int[] numeros = {1, 2, 3, 4, 5};
+        int suma = 0;
+        
+        for (int num : numeros) {
+            suma += num;
+        }
+        
+        System.out.println("La suma es: " + suma);
+        
+        // Ejemplo de método
+        saludar("Estudiante");
+    }
+    
+    public static void saludar(String nombre) {
+        System.out.println("Hola " + nombre + "!");
+    }
+}`,
+                    
+                    'cpp': `// Ejemplo de código C++
+// Autor: Estudiante UNA Puno
+// Fecha: ${new Date().toLocaleDateString()}
+
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+int main() {
+    cout << "Hola Mundo desde C++!" << endl;
+    
+    vector<int> numeros = {1, 2, 3, 4, 5};
+    int suma = 0;
+    
+    for (int num : numeros) {
+        suma += num;
+    }
+    
+    cout << "La suma es: " << suma << endl;
+    
+    return 0;
+}`,
+                    
+                    'js': `// Ejemplo de código JavaScript
+// Autor: Estudiante UNA Puno
+// Fecha: ${new Date().toLocaleDateString()}
+
+console.log("Hola Mundo desde JavaScript!");
+
+const numeros = [1, 2, 3, 4, 5];
+let suma = 0;
+
+numeros.forEach(num => {
+    suma += num;
+});
+
+console.log(\`La suma es: \${suma}\`);
+
+// Función de ejemplo
+function saludar(nombre) {
+    return \`¡Hola \${nombre}!\`;
+}
+
+console.log(saludar("Estudiante"));`,
+                    
+                    'txt': `Archivo de texto de ejemplo
+Autor: Estudiante UNA Puno
+Fecha: ${new Date().toLocaleDateString()}
+Curso: Lenguaje de Programación 2
+Código: 241411
+
+Este es un archivo de texto de ejemplo para el sistema de gestión
+de archivos de la Universidad Nacional del Altiplano.
+
+El sistema permite:
+- Subir múltiples archivos
+- Visualizar código con resaltado de sintaxis
+- Buscar y filtrar archivos
+- Realizar acciones en masa
+
+¡Bienvenido al sistema!`,
+                    
+                    'html': `<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejemplo HTML - UNA Puno</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #0a2463;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ejemplo de archivo HTML</h1>
+        <p>Este es un archivo HTML de ejemplo para el sistema de gestión de archivos.</p>
+        <p>Autor: Estudiante UNA Puno</p>
+        <p>Fecha: ${new Date().toLocaleDateString()}</p>
+    </div>
+</body>
+</html>`,
+                    
+                    'css': `/* Archivo CSS de ejemplo */
+/* Autor: Estudiante UNA Puno */
+/* Fecha: ${new Date().toLocaleDateString()} */
+
+:root {
+    --primary-color: #0a2463;
+    --secondary-color: #3a7bd5;
+    --text-color: #333;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f8f9ff;
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: 30px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.button {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: var(--primary-color);
+}`
+                };
+                
+                return codes[language] || codes['txt'];
+            }
+            
+            function generateRandomDate() {
+                const start = new Date(2025, 0, 1);
+                const end = new Date();
+                const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+                return date.toISOString().split('T')[0];
+            }
+            
             // Función para crear partículas de fondo
             function createParticles() {
-                const particleCount = 50;
+                const particleCount = 80;
                 
                 for (let i = 0; i < particleCount; i++) {
                     const particle = document.createElement('div');
                     particle.classList.add('particle');
                     
-                    // Tamaño aleatorio
                     const size = Math.random() * 10 + 5;
                     particle.style.width = `${size}px`;
                     particle.style.height = `${size}px`;
                     
-                    // Posición inicial aleatoria
                     particle.style.left = `${Math.random() * 100}%`;
-                    
-                    // Opacidad aleatoria
                     particle.style.opacity = Math.random() * 0.5 + 0.1;
                     
-                    // Color azul aleatorio
                     const blueShade = Math.floor(Math.random() * 100 + 100);
                     particle.style.background = `rgba(58, 123, 213, ${Math.random() * 0.3 + 0.1})`;
                     
-                    // Animación con duración aleatoria
                     const duration = Math.random() * 20 + 15;
                     particle.style.animationDuration = `${duration}s`;
-                    
-                    // Retraso aleatorio
                     particle.style.animationDelay = `${Math.random() * 5}s`;
                     
                     particlesContainer.appendChild(particle);
@@ -1321,48 +1667,106 @@ if __name__ == "__main__":
             
             // Función para cargar archivos de ejemplo
             function loadSampleFiles() {
-                fileList.innerHTML = '';
                 uploadedFiles = [...sampleFiles];
+                updateFileList();
                 
-                sampleFiles.forEach((file, index) => {
-                    const fileItem = createFileElement(file, index);
-                    fileList.appendChild(fileItem);
-                });
+                // Mostrar el primer archivo por defecto
+                if (uploadedFiles.length > 0) {
+                    showFileContent(0);
+                }
+            }
+            
+            // Función para actualizar la lista de archivos
+            function updateFileList() {
+                fileList.innerHTML = '';
+                
+                // Filtrar archivos
+                let filteredFiles = uploadedFiles;
+                
+                if (currentFilter !== 'all') {
+                    if (currentFilter === 'other') {
+                        filteredFiles = uploadedFiles.filter(file => 
+                            !['py', 'java', 'cpp', 'js', 'txt', 'html', 'css'].includes(file.type)
+                        );
+                    } else {
+                        filteredFiles = uploadedFiles.filter(file => file.type === currentFilter);
+                    }
+                }
+                
+                // Filtrar por búsqueda
+                if (currentSearch) {
+                    const searchTerm = currentSearch.toLowerCase();
+                    filteredFiles = filteredFiles.filter(file => 
+                        file.name.toLowerCase().includes(searchTerm) ||
+                        file.student.toLowerCase().includes(searchTerm)
+                    );
+                }
+                
+                // Actualizar contador
+                const totalFiles = filteredFiles.length;
+                fileCount.textContent = `${totalFiles} archivo${totalFiles !== 1 ? 's' : ''}`;
+                
+                if (totalFiles === 0) {
+                    emptyMessage.style.display = 'block';
+                    pagination.style.display = 'none';
+                    return;
+                }
                 
                 emptyMessage.style.display = 'none';
                 
-                // Mostrar el primer archivo por defecto
-                if (sampleFiles.length > 0) {
-                    showFileContent(0);
-                }
+                // Calcular paginación
+                const totalPages = Math.ceil(totalFiles / filesPerPage);
+                currentPage = Math.min(currentPage, totalPages);
+                
+                const startIndex = (currentPage - 1) * filesPerPage;
+                const endIndex = Math.min(startIndex + filesPerPage, totalFiles);
+                const pageFiles = filteredFiles.slice(startIndex, endIndex);
+                
+                // Crear elementos de archivo
+                pageFiles.forEach((fileData, index) => {
+                    const globalIndex = uploadedFiles.findIndex(f => f === fileData);
+                    const fileItem = createFileElement(fileData, globalIndex);
+                    fileList.appendChild(fileItem);
+                    
+                    // Marcar como seleccionado si está en el conjunto
+                    if (selectedFiles.has(globalIndex)) {
+                        const checkbox = fileItem.querySelector('.file-checkbox');
+                        if (checkbox) checkbox.checked = true;
+                        fileItem.style.backgroundColor = '#f0f9ff';
+                    }
+                });
+                
+                // Actualizar paginación
+                updatePagination(totalPages);
+                
+                // Mostrar u ocultar acciones en masa
+                updateBulkActions();
             }
             
             // Función para crear un elemento de archivo
             function createFileElement(fileData, index) {
                 const li = document.createElement('li');
-                li.className = 'file-item';
+                li.className = `file-item ${fileData.type}`;
                 li.dataset.index = index;
+                li.dataset.type = fileData.type;
                 
-                // Obtener extensión del archivo
-                const extension = fileData.name.split('.').pop().toLowerCase();
-                
-                // Determinar icono según extensión
-                let icon = 'fas fa-file';
-                if (extension === 'py') icon = 'fab fa-python';
-                else if (extension === 'java') icon = 'fab fa-java';
-                else if (extension === 'cpp' || extension === 'c') icon = 'fas fa-file-code';
-                else if (extension === 'js') icon = 'fab fa-js';
-                else if (extension === 'pdf') icon = 'fas fa-file-pdf';
-                else if (extension === 'zip' || extension === 'rar') icon = 'fas fa-file-archive';
-                else if (extension === 'txt') icon = 'fas fa-file-alt';
+                // Obtener icono según extensión
+                const icon = getFileIcon(fileData.type);
                 
                 li.innerHTML = `
+                    <input type="checkbox" class="file-checkbox" data-index="${index}">
                     <div class="file-icon">
                         <i class="${icon}"></i>
                     </div>
                     <div class="file-info">
-                        <h4>${fileData.name}</h4>
-                        <p>${fileData.size} | ${fileData.date} | ${fileData.student}</p>
+                        <h4 title="${fileData.name}">${fileData.name}</h4>
+                        <p>
+                            <span class="file-stats">
+                                <span><i class="fas fa-weight-hanging"></i> ${fileData.size}</span>
+                                <span><i class="far fa-calendar"></i> ${fileData.date}</span>
+                                <span><i class="fas fa-user-graduate"></i> ${fileData.student}</span>
+                            </span>
+                        </p>
                     </div>
                     <div class="file-actions">
                         <button class="file-action-btn view-file-btn" title="Ver código">
@@ -1377,16 +1781,30 @@ if __name__ == "__main__":
                     </div>
                 `;
                 
-                // Añadir funcionalidad a los botones
+                // Añadir funcionalidad
                 const viewBtn = li.querySelector('.view-file-btn');
                 const downloadBtn = li.querySelector('.download-file-btn');
                 const deleteBtn = li.querySelector('.delete-file-btn');
+                const checkbox = li.querySelector('.file-checkbox');
                 
-                // Ver archivo al hacer clic en el elemento
+                // Ver archivo al hacer clic en el elemento (excepto en checkbox o botones)
                 li.addEventListener('click', function(e) {
-                    if (!e.target.closest('.file-action-btn')) {
+                    if (!e.target.closest('.file-action-btn') && !e.target.closest('.file-checkbox')) {
                         showFileContent(index);
                     }
+                });
+                
+                // Checkbox para selección múltiple
+                checkbox.addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    if (this.checked) {
+                        selectedFiles.add(index);
+                        li.style.backgroundColor = '#f0f9ff';
+                    } else {
+                        selectedFiles.delete(index);
+                        li.style.backgroundColor = '';
+                    }
+                    updateBulkActions();
                 });
                 
                 viewBtn.addEventListener('click', function(e) {
@@ -1397,44 +1815,31 @@ if __name__ == "__main__":
                 downloadBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
                     downloadFile(fileData);
-                    showMessage(`Descargando: ${fileData.name}`, 'success');
+                    showToast(`Descargando: ${fileData.name}`, 'success');
                 });
                 
                 deleteBtn.addEventListener('click', function(e) {
                     e.stopPropagation();
-                    if (confirm(`¿Estás seguro de que quieres eliminar ${fileData.name}?`)) {
-                        li.style.transform = 'translateX(100px)';
-                        li.style.opacity = '0';
-                        
-                        setTimeout(() => {
-                            li.remove();
-                            uploadedFiles.splice(index, 1);
-                            
-                            // Actualizar índices de los elementos restantes
-                            document.querySelectorAll('.file-item').forEach((item, idx) => {
-                                item.dataset.index = idx;
-                            });
-                            
-                            // Si eliminamos el archivo actual, mostrar el primero o vacío
-                            if (currentFileIndex === index) {
-                                if (uploadedFiles.length > 0) {
-                                    showFileContent(0);
-                                } else {
-                                    showEmptyCodeViewer();
-                                }
-                            }
-                            
-                            // Mostrar mensaje si no hay archivos
-                            if (fileList.children.length === 0) {
-                                emptyMessage.style.display = 'block';
-                            }
-                        }, 300);
-                        
-                        showMessage(`Archivo eliminado: ${fileData.name}`, 'warning');
-                    }
+                    deleteFile(index);
                 });
                 
                 return li;
+            }
+            
+            // Función para obtener icono según tipo de archivo
+            function getFileIcon(type) {
+                const icons = {
+                    'py': 'fab fa-python',
+                    'java': 'fab fa-java',
+                    'cpp': 'fas fa-file-code',
+                    'js': 'fab fa-js',
+                    'txt': 'fas fa-file-alt',
+                    'html': 'fab fa-html5',
+                    'css': 'fab fa-css3',
+                    'default': 'fas fa-file'
+                };
+                
+                return icons[type] || icons.default;
             }
             
             // Función para mostrar el contenido de un archivo
@@ -1449,22 +1854,18 @@ if __name__ == "__main__":
                     item.classList.remove('active');
                 });
                 
-                document.querySelector(`.file-item[data-index="${index}"]`).classList.add('active');
+                const fileElement = document.querySelector(`.file-item[data-index="${index}"]`);
+                if (fileElement) {
+                    fileElement.classList.add('active');
+                    fileElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
                 
                 // Actualizar información del archivo
                 currentFile.textContent = fileData.name;
                 codeActions.style.display = 'flex';
                 
                 // Mostrar el contenido del archivo
-                const extension = fileData.name.split('.').pop().toLowerCase();
-                let language = 'python';
-                
-                if (extension === 'java') language = 'java';
-                else if (extension === 'cpp' || extension === 'c') language = 'cpp';
-                else if (extension === 'js') language = 'javascript';
-                else if (extension === 'html') language = 'html';
-                else if (extension === 'css') language = 'css';
-                else if (extension === 'txt') language = 'plaintext';
+                const language = getHighlightLanguage(fileData.type);
                 
                 // Generar números de línea
                 const lines = fileData.content.split('\n');
@@ -1477,31 +1878,39 @@ if __name__ == "__main__":
                 // Mostrar contenido con resaltado de sintaxis
                 codeContent.innerHTML = hljs.highlight(fileData.content, { language: language }).value;
                 
-                // Actualizar icono según el tipo de archivo
+                // Actualizar icono
                 const iconElement = codeFileName.querySelector('i');
-                if (extension === 'py') {
-                    iconElement.className = 'fab fa-python';
-                } else if (extension === 'java') {
-                    iconElement.className = 'fab fa-java';
-                } else if (extension === 'cpp' || extension === 'c') {
-                    iconElement.className = 'fas fa-file-code';
-                } else if (extension === 'js') {
-                    iconElement.className = 'fab fa-js';
-                } else {
-                    iconElement.className = 'fas fa-file-code';
-                }
+                iconElement.className = getFileIcon(fileData.type);
+                
+                // Desplazar al inicio
+                document.querySelector('.code-viewer').scrollTop = 0;
+            }
+            
+            // Función para obtener lenguaje para resaltado
+            function getHighlightLanguage(type) {
+                const languages = {
+                    'py': 'python',
+                    'java': 'java',
+                    'cpp': 'cpp',
+                    'js': 'javascript',
+                    'txt': 'plaintext',
+                    'html': 'html',
+                    'css': 'css'
+                };
+                
+                return languages[type] || 'plaintext';
             }
             
             // Función para mostrar vista de código vacía
             function showEmptyCodeViewer() {
-                currentFile.textContent = 'Selecciona un archivo .py para ver el código';
+                currentFile.textContent = 'Selecciona un archivo para ver el código';
                 codeActions.style.display = 'none';
                 lineNumbers.innerHTML = '';
                 codeContent.innerHTML = `
 <div class="no-code">
     <i class="fas fa-file-code"></i>
     <h3>No hay código para mostrar</h3>
-    <p>Sube un archivo .py o haz clic en uno de la lista</p>
+    <p>Sube un archivo o haz clic en uno de la lista</p>
 </div>`;
             }
             
@@ -1510,11 +1919,30 @@ if __name__ == "__main__":
                 fileInput.click();
             });
             
+            // Configurar input para múltiples archivos
+            fileInput.setAttribute('multiple', 'true');
+            
             // Evento para cuando se selecciona un archivo
             fileInput.addEventListener('change', function() {
                 if (fileInput.files.length > 0) {
-                    if (fileInput.files.length > 10) {
-                        showMessage('Máximo 10 archivos a la vez', 'error');
+                    if (fileInput.files.length > 100) {
+                        showToast('Máximo 100 archivos por carga', 'error');
+                        return;
+                    }
+                    
+                    // Verificar tamaño de archivos
+                    let totalSize = 0;
+                    let oversizedFiles = [];
+                    
+                    for (let file of fileInput.files) {
+                        if (file.size > 10 * 1024 * 1024) { // 10MB
+                            oversizedFiles.push(file.name);
+                        }
+                        totalSize += file.size;
+                    }
+                    
+                    if (oversizedFiles.length > 0) {
+                        showToast(`Archivos muy grandes (máx 10MB): ${oversizedFiles.join(', ')}`, 'error');
                         return;
                     }
                     
@@ -1543,8 +1971,8 @@ if __name__ == "__main__":
                 dropArea.style.transform = '';
                 
                 if (e.dataTransfer.files.length > 0) {
-                    if (e.dataTransfer.files.length > 10) {
-                        showMessage('Máximo 10 archivos a la vez', 'error');
+                    if (e.dataTransfer.files.length > 100) {
+                        showToast('Máximo 100 archivos por carga', 'error');
                         return;
                     }
                     
@@ -1559,19 +1987,19 @@ if __name__ == "__main__":
                 successMessage.style.display = 'none';
                 
                 let progress = 0;
+                const totalFiles = files.length;
                 
-                // Efecto de sonido simulado (visual)
-                dropArea.innerHTML = '<i class="fas fa-spinner fa-spin"></i><h3>Procesando archivos...</h3>';
+                // Efecto de carga
+                dropArea.innerHTML = '<div class="spinner"></div><h3>Procesando ' + totalFiles + ' archivos...</h3>';
                 
-                // Simular progreso de subida
+                // Simular progreso
                 const interval = setInterval(() => {
-                    progress += Math.random() * 15;
+                    progress += Math.random() * 20;
                     
                     if (progress > 100) {
                         progress = 100;
                         clearInterval(interval);
                         
-                        // Archivo "subido" completamente
                         setTimeout(() => {
                             progressContainer.style.display = 'none';
                             successMessage.style.display = 'block';
@@ -1579,11 +2007,12 @@ if __name__ == "__main__":
                             // Restaurar el área de subida
                             dropArea.innerHTML = `
                                 <i class="fas fa-file-upload"></i>
-                                <h3>Arrastra y suelta tus archivos .py aquí</h3>
-                                <p>o haz clic para seleccionar archivos</p>
-                                <p>Formatos permitidos: .py (Python), .txt, .java, .cpp</p>
+                                <h3>Arrastra y suelta hasta 100 archivos aquí</h3>
+                                <p>o haz clic para seleccionar múltiples archivos</p>
+                                <p>Formatos permitidos: .py, .txt, .java, .cpp, .js, .html, .css</p>
+                                <p><strong>Límite: 100 archivos por lote | Tamaño máximo: 10MB por archivo</strong></p>
                                 <button class="upload-btn" id="selectFileBtn">
-                                    <i class="fas fa-folder-open"></i> Seleccionar Archivo
+                                    <i class="fas fa-folder-open"></i> Seleccionar Archivos
                                 </button>
                             `;
                             
@@ -1606,12 +2035,14 @@ if __name__ == "__main__":
                     }
                     
                     progressFill.style.width = progress + '%';
-                    progressText.textContent = `Subiendo archivo... ${Math.round(progress)}%`;
+                    progressText.textContent = `Procesando archivos... ${Math.round(progress)}%`;
                 }, 100);
             }
             
             // Función para procesar archivos subidos
             async function processUploadedFiles(files) {
+                const newFiles = [];
+                
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     
@@ -1619,44 +2050,40 @@ if __name__ == "__main__":
                         // Leer el contenido del archivo
                         const content = await readFileContent(file);
                         
+                        // Extraer extensión
+                        const extension = file.name.split('.').pop().toLowerCase();
+                        
                         // Crear objeto de archivo
                         const fileData = {
                             name: file.name,
                             size: formatFileSize(file.size),
                             date: new Date().toISOString().split('T')[0],
                             student: "Tú",
-                            content: content
+                            content: content,
+                            type: extension,
+                            uploadedAt: new Date().toISOString()
                         };
                         
-                        // Agregar a la lista
-                        uploadedFiles.push(fileData);
-                        const index = uploadedFiles.length - 1;
-                        
-                        // Crear y agregar elemento a la lista
-                        const fileElement = createFileElement(fileData, index);
-                        fileList.prepend(fileElement);
-                        emptyMessage.style.display = 'none';
-                        
-                        // Mostrar el primer archivo subido
-                        if (i === 0) {
-                            showFileContent(index);
-                        }
-                        
-                        // Efecto especial para el nuevo archivo
-                        setTimeout(() => {
-                            fileElement.style.boxShadow = '0 0 20px rgba(58, 123, 213, 0.5)';
-                            setTimeout(() => {
-                                fileElement.style.boxShadow = '';
-                            }, 1000);
-                        }, 100 * i);
+                        newFiles.push(fileData);
                         
                     } catch (error) {
                         console.error("Error al leer el archivo:", error);
-                        showMessage(`Error al procesar ${file.name}`, 'error');
+                        showToast(`Error al procesar ${file.name}`, 'error');
                     }
                 }
                 
-                showMessage(`${files.length} archivo(s) subido(s) exitosamente`, 'success');
+                // Agregar nuevos archivos al principio
+                uploadedFiles.unshift(...newFiles);
+                
+                // Actualizar lista
+                updateFileList();
+                
+                // Mostrar el primer archivo nuevo
+                if (newFiles.length > 0) {
+                    showFileContent(0);
+                }
+                
+                showToast(`${newFiles.length} archivo(s) subido(s) exitosamente`, 'success');
             }
             
             // Función para leer el contenido de un archivo
@@ -1676,6 +2103,59 @@ if __name__ == "__main__":
                 });
             }
             
+            // Función para eliminar un archivo
+            function deleteFile(index) {
+                const fileData = uploadedFiles[index];
+                
+                if (confirm(`¿Estás seguro de que quieres eliminar ${fileData.name}?`)) {
+                    // Animación de eliminación
+                    const fileElement = document.querySelector(`.file-item[data-index="${index}"]`);
+                    if (fileElement) {
+                        fileElement.style.transform = 'translateX(100px)';
+                        fileElement.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            // Eliminar archivo
+                            uploadedFiles.splice(index, 1);
+                            selectedFiles.delete(index);
+                            
+                            // Actualizar índices
+                            document.querySelectorAll('.file-item').forEach((item, idx) => {
+                                const oldIndex = parseInt(item.dataset.index);
+                                if (oldIndex > index) {
+                                    item.dataset.index = oldIndex - 1;
+                                }
+                            });
+                            
+                            // Actualizar conjunto de selección
+                            const newSelected = new Set();
+                            selectedFiles.forEach(oldIndex => {
+                                if (oldIndex < index) {
+                                    newSelected.add(oldIndex);
+                                } else if (oldIndex > index) {
+                                    newSelected.add(oldIndex - 1);
+                                }
+                            });
+                            selectedFiles = newSelected;
+                            
+                            // Si eliminamos el archivo actual, mostrar el primero o vacío
+                            if (currentFileIndex === index) {
+                                if (uploadedFiles.length > 0) {
+                                    showFileContent(0);
+                                } else {
+                                    showEmptyCodeViewer();
+                                }
+                            }
+                            
+                            // Actualizar lista
+                            updateFileList();
+                        }, 300);
+                        
+                        showToast(`Archivo eliminado: ${fileData.name}`, 'warning');
+                    }
+                }
+            }
+            
             // Función para descargar un archivo
             function downloadFile(fileData) {
                 const element = document.createElement('a');
@@ -1687,65 +2167,123 @@ if __name__ == "__main__":
                 document.body.removeChild(element);
             }
             
+            // Función para descargar múltiples archivos
+            async function downloadMultipleFiles() {
+                if (selectedFiles.size === 0) return;
+                
+                try {
+                    showToast(`Preparando ${selectedFiles.size} archivos para descarga...`, 'info');
+                    
+                    const zip = new JSZip();
+                    
+                    // Agregar archivos al zip
+                    selectedFiles.forEach(index => {
+                        const fileData = uploadedFiles[index];
+                        zip.file(fileData.name, fileData.content);
+                    });
+                    
+                    // Generar el archivo zip
+                    const content = await zip.generateAsync({type: 'blob'});
+                    
+                    // Descargar el zip
+                    const element = document.createElement('a');
+                    element.href = URL.createObjectURL(content);
+                    element.download = `archivos_${new Date().toISOString().split('T')[0]}.zip`;
+                    document.body.appendChild(element);
+                    element.click();
+                    document.body.removeChild(element);
+                    
+                    showToast(`${selectedFiles.size} archivos descargados como ZIP`, 'success');
+                    
+                } catch (error) {
+                    console.error('Error al crear ZIP:', error);
+                    showToast('Error al crear archivo ZIP', 'error');
+                }
+            }
+            
+            // Función para eliminar múltiples archivos
+            function deleteMultipleFiles() {
+                if (selectedFiles.size === 0) return;
+                
+                if (confirm(`¿Estás seguro de que quieres eliminar ${selectedFiles.size} archivo(s)?`)) {
+                    // Convertir a array y ordenar de mayor a menor
+                    const indicesToDelete = Array.from(selectedFiles).sort((a, b) => b - a);
+                    
+                    // Eliminar archivos
+                    indicesToDelete.forEach(index => {
+                        uploadedFiles.splice(index, 1);
+                    });
+                    
+                    // Limpiar selección
+                    selectedFiles.clear();
+                    
+                    // Actualizar lista
+                    updateFileList();
+                    
+                    // Actualizar visualizador si el archivo actual fue eliminado
+                    if (indicesToDelete.includes(currentFileIndex)) {
+                        if (uploadedFiles.length > 0) {
+                            showFileContent(0);
+                        } else {
+                            showEmptyCodeViewer();
+                        }
+                    }
+                    
+                    showToast(`${indicesToDelete.length} archivo(s) eliminado(s)`, 'warning');
+                }
+            }
+            
             // Función para formatear el tamaño del archivo
             function formatFileSize(bytes) {
                 if (bytes < 1024) {
                     return bytes + ' bytes';
                 } else if (bytes < 1048576) {
                     return (bytes / 1024).toFixed(1) + ' KB';
-                } else {
+                } else if (bytes < 1073741824) {
                     return (bytes / 1048576).toFixed(1) + ' MB';
+                } else {
+                    return (bytes / 1073741824).toFixed(1) + ' GB';
                 }
             }
             
-            // Función para mostrar mensajes temporales
-            function showMessage(text, type) {
-                // Crear elemento de mensaje
-                const message = document.createElement('div');
-                message.className = 'floating-notification';
-                message.style.bottom = '80px';
-                message.style.right = '30px';
-                message.style.background = type === 'success' 
-                    ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)' 
-                    : type === 'error' 
-                    ? 'linear-gradient(135deg, #dc3545 0%, #c82333 100%)'
-                    : type === 'warning'
-                    ? 'linear-gradient(135deg, #ffc107 0%, #e0a800 100%)'
-                    : 'var(--gradient-primary)';
+            // Función para mostrar toast notifications
+            function showToast(text, type = 'info') {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
                 
-                message.innerHTML = `
-                    <div class="notification-content">
-                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
-                        <div>${text}</div>
-                    </div>
-                    <button class="close-notification">
+                const icons = {
+                    'success': 'fa-check-circle',
+                    'error': 'fa-exclamation-circle',
+                    'warning': 'fa-exclamation-triangle',
+                    'info': 'fa-info-circle'
+                };
+                
+                toast.innerHTML = `
+                    <i class="fas ${icons[type]}"></i>
+                    <div class="toast-content">${text}</div>
+                    <button class="toast-close">
                         <i class="fas fa-times"></i>
                     </button>
                 `;
                 
-                document.body.appendChild(message);
+                toastContainer.appendChild(toast);
                 
-                // Animación de entrada
+                // Cerrar automáticamente después de 5 segundos
                 setTimeout(() => {
-                    message.style.display = 'block';
-                }, 10);
-                
-                // Cerrar mensaje automáticamente después de 4 segundos
-                setTimeout(() => {
-                    message.style.opacity = '0';
-                    message.style.transform = 'translateX(100px)';
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100px)';
                     setTimeout(() => {
-                        message.remove();
-                    }, 500);
-                }, 4000);
+                        toast.remove();
+                    }, 300);
+                }, 5000);
                 
-                // Cerrar mensaje al hacer clic
-                message.querySelector('.close-notification').addEventListener('click', function() {
-                    message.style.opacity = '0';
-                    message.style.transform = 'translateX(100px)';
+                // Cerrar al hacer clic
+                toast.querySelector('.toast-close').addEventListener('click', function() {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100px)';
                     setTimeout(() => {
-                        message.remove();
-                    }, 500);
+                        toast.remove();
+                    }, 300);
                 });
             }
             
@@ -1755,14 +2293,14 @@ if __name__ == "__main__":
                     const fileData = uploadedFiles[currentFileIndex];
                     navigator.clipboard.writeText(fileData.content)
                         .then(() => {
-                            showMessage('Código copiado al portapapeles', 'success');
+                            showToast('Código copiado al portapapeles', 'success');
                             this.innerHTML = '<i class="fas fa-check"></i> ¡Copiado!';
                             setTimeout(() => {
                                 this.innerHTML = '<i class="fas fa-copy"></i> Copiar código';
                             }, 2000);
                         })
                         .catch(err => {
-                            showMessage('Error al copiar el código', 'error');
+                            showToast('Error al copiar el código', 'error');
                         });
                 }
             });
@@ -1771,75 +2309,138 @@ if __name__ == "__main__":
                 if (currentFileIndex >= 0) {
                     const fileData = uploadedFiles[currentFileIndex];
                     downloadFile(fileData);
-                    showMessage(`Descargando: ${fileData.name}`, 'success');
+                    showToast(`Descargando: ${fileData.name}`, 'success');
                 }
             });
             
             runCodeBtn.addEventListener('click', function() {
                 if (currentFileIndex >= 0) {
-                    showMessage('Simulación de ejecución: El código se ejecutaría en un entorno Python real', 'info');
-                    
-                    // Simular ejecución mostrando un modal
-                    const modal = document.createElement('div');
-                    modal.className = 'floating-notification';
-                    modal.style.bottom = '150px';
-                    modal.style.right = '30px';
-                    modal.style.width = '400px';
-                    modal.style.maxWidth = '90vw';
-                    modal.innerHTML = `
-                        <div class="notification-content">
-                            <i class="fas fa-terminal"></i>
-                            <div>
-                                <strong>Simulación de ejecución</strong><br>
-                                <small>Resultado simulado (no ejecución real)</small>
-                                <div style="background: rgba(0,0,0,0.2); padding: 10px; border-radius: 5px; margin-top: 10px; font-family: monospace; font-size: 12px;">
-                                    >>> python ${uploadedFiles[currentFileIndex].name}<br>
-                                    === CALCULADORA BÁSICA ===<br>
-                                    Operaciones disponibles:<br>
-                                    1. Suma<br>
-                                    2. Resta<br>
-                                    3. Multiplicación<br>
-                                    4. División<br>
-                                    5. Salir<br><br>
-                                    [Ejecución simulada - En un entorno real se ejecutaría el código]
-                                </div>
-                            </div>
-                        </div>
-                        <button class="close-notification">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    `;
-                    
-                    document.body.appendChild(modal);
-                    
-                    // Animación de entrada
-                    setTimeout(() => {
-                        modal.style.display = 'block';
-                    }, 10);
-                    
-                    // Cerrar mensaje al hacer clic
-                    modal.querySelector('.close-notification').addEventListener('click', function() {
-                        modal.style.opacity = '0';
-                        modal.style.transform = 'translateX(100px)';
-                        setTimeout(() => {
-                            modal.remove();
-                        }, 500);
-                    });
-                    
-                    // Cerrar automáticamente después de 8 segundos
-                    setTimeout(() => {
-                        if (modal.parentNode) {
-                            modal.style.opacity = '0';
-                            modal.style.transform = 'translateX(100px)';
-                            setTimeout(() => {
-                                if (modal.parentNode) modal.remove();
-                            }, 500);
-                        }
-                    }, 8000);
+                    showToast('Simulación de ejecución: El código se ejecutaría en un entorno real', 'info');
                 }
             });
             
-            // Efecto de entrada para elementos al hacer scroll
+            fullscreenBtn.addEventListener('click', function() {
+                const codeViewer = document.querySelector('.code-viewer');
+                if (!document.fullscreenElement) {
+                    if (codeViewer.requestFullscreen) {
+                        codeViewer.requestFullscreen();
+                    } else if (codeViewer.webkitRequestFullscreen) {
+                        codeViewer.webkitRequestFullscreen();
+                    }
+                    this.innerHTML = '<i class="fas fa-compress"></i> Salir';
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    }
+                    this.innerHTML = '<i class="fas fa-expand"></i> Pantalla completa';
+                }
+            });
+            
+            // Eventos de filtro
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Actualizar botones activos
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Aplicar filtro
+                    currentFilter = this.dataset.filter;
+                    currentPage = 1;
+                    updateFileList();
+                });
+            });
+            
+            // Evento de búsqueda
+            fileSearch.addEventListener('input', function() {
+                currentSearch = this.value;
+                currentPage = 1;
+                updateFileList();
+            });
+            
+            // Eventos de paginación
+            prevPageBtn.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updateFileList();
+                }
+            });
+            
+            nextPageBtn.addEventListener('click', function() {
+                const totalFiles = currentFilter === 'all' ? uploadedFiles.length : 
+                    uploadedFiles.filter(f => f.type === currentFilter).length;
+                const totalPages = Math.ceil(totalFiles / filesPerPage);
+                
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updateFileList();
+                }
+            });
+            
+            // Actualizar paginación
+            function updatePagination(totalPages) {
+                if (totalPages <= 1) {
+                    pagination.style.display = 'none';
+                    return;
+                }
+                
+                pagination.style.display = 'flex';
+                pageInfo.textContent = `Página ${currentPage} de ${totalPages}`;
+                
+                prevPageBtn.disabled = currentPage === 1;
+                nextPageBtn.disabled = currentPage === totalPages;
+            }
+            
+            // Actualizar acciones en masa
+            function updateBulkActions() {
+                if (selectedFiles.size === 0) {
+                    bulkActions.style.display = 'none';
+                } else {
+                    bulkActions.style.display = 'block';
+                    selectedCount.textContent = `${selectedFiles.size} archivo${selectedFiles.size !== 1 ? 's' : ''} seleccionado${selectedFiles.size !== 1 ? 's' : ''}`;
+                }
+            }
+            
+            // Eventos de acciones en masa
+            bulkDownload.addEventListener('click', downloadMultipleFiles);
+            bulkDelete.addEventListener('click', deleteMultipleFiles);
+            bulkClear.addEventListener('click', function() {
+                // Desmarcar todos los checkboxes
+                document.querySelectorAll('.file-checkbox').forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // Limpiar selección
+                selectedFiles.clear();
+                
+                // Restaurar colores
+                document.querySelectorAll('.file-item').forEach(item => {
+                    item.style.backgroundColor = '';
+                });
+                
+                updateBulkActions();
+            });
+            
+            // Document event para seleccionar/deseleccionar todos
+            document.addEventListener('click', function(e) {
+                // Checkbox "seleccionar todo" (si se implementa)
+                if (e.target.id === 'selectAllCheckbox') {
+                    const isChecked = e.target.checked;
+                    document.querySelectorAll('.file-checkbox').forEach(checkbox => {
+                        checkbox.checked = isChecked;
+                        const index = parseInt(checkbox.dataset.index);
+                        if (isChecked) {
+                            selectedFiles.add(index);
+                        } else {
+                            selectedFiles.delete(index);
+                        }
+                    });
+                    updateBulkActions();
+                }
+            });
+            
+            // Observador de intersección para animaciones
             const observerOptions = {
                 threshold: 0.1,
                 rootMargin: '0px 0px -50px 0px'
@@ -1854,7 +2455,7 @@ if __name__ == "__main__":
                 });
             }, observerOptions);
             
-            // Aplicar a las secciones
+            // Aplicar animaciones a las secciones
             document.querySelectorAll('.upload-section, .code-viewer-section, .files-section, footer').forEach(el => {
                 el.style.opacity = '0';
                 el.style.transform = 'translateY(20px)';
